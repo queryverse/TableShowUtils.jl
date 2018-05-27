@@ -178,4 +178,6 @@ function printHTMLtable(io, source)
     end
 end
 
+include("dataresource.jl")
+
 end # module

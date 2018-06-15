@@ -1,3 +1,4 @@
+__precompile__()
 module TableShowUtils
 
 function printtable(io::IO, source, typename::AbstractString; force_unknown_rows=false)

@@ -1,9 +1,13 @@
+__precompile__()
 module TableShowUtils
 
-function printtable(io::IO, source, typename::AbstractString)
+function printtable(io::IO, source, typename::AbstractString; force_unknown_rows=false)
     T = eltype(source)
 
-    if Base.iteratorsize(source)==Base.HasLength()
+    if force_unknown_rows
+        rows = nothing
+        data = Iterators.take(source, 10) |> collect
+    elseif Base.iteratorsize(source)==Base.HasLength()
         rows = length(source)
         data = Iterators.take(source, 10) |> collect
     else
@@ -110,12 +114,14 @@ function printtable(io::IO, source, typename::AbstractString)
     end
 end
 
-function printHTMLtable(io, source)
+function printHTMLtable(io, source; force_unknown_rows=false)
     colnames = String.(fieldnames(eltype(source)))
 
     max_elements = 10
 
-    if Base.iteratorsize(source)==Base.HasLength()
+    if force_unknown_rows
+        rows = nothing
+    elseif Base.iteratorsize(source)==Base.HasLength()
         rows = length(source)
     else
         count_needed_plus_one =  Iterators.count(i->true, Iterators.take(source, max_elements+1))

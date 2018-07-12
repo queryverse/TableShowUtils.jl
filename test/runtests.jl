@@ -1,14 +1,9 @@
 using TableShowUtils
-using NamedTuples
-@static if VERSION < v"0.7.0-DEV.2005"
-    using Base.Test
-else
-    using Test
-end
+using Test
 
 @testset "TableShowUtils" begin
 
-source = [@NT(a=1,b="A"),@NT(a=2,b="B")]
+source = [(a=1,b="A"),(a=2,b="B")]
 
 @test sprint(TableShowUtils.printtable, source, "foo file") == """
 2x2 foo file

@@ -8,7 +8,4 @@
 
 ## Overview
 
-This package provides some common helper functions that make it easier
-to implement various ``Base.show`` functions for types that participate
-in the [TableTraits.jl](https://github.com/davidanthoff/TableTraits.jl)
-ecosystem. Most users will probably not have any direct use for this package.
+This package provides some common helper functions that make it easier to implement various ``Base.show`` functions for types that participate in the [TableTraits.jl](https://github.com/davidanthoff/TableTraits.jl) ecosystem. Most users will probably not have any direct use for this package.

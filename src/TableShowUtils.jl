@@ -23,7 +23,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
         end
     end
 
-    cols = length(T.parameters)
+    cols = length(fieldnames(T))
 
     println(io, "$(rows===nothing ? "?" : rows)x$(cols) $typename")
 

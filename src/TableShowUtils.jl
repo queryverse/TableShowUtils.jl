@@ -1,7 +1,7 @@
 module TableShowUtils
 
 import JSON, DataValues
-import Markdown
+import Markdown, Dates
 
 function printtable(io::IO, source, typename::AbstractString; force_unknown_rows=false)
     T = eltype(source)
@@ -195,11 +195,14 @@ julia_type_to_schema_type(::Type{T}) where {T<:Dates.Time} = "time"
 julia_type_to_schema_type(::Type{T}) where {T<:Dates.Date} = "date"
 julia_type_to_schema_type(::Type{T}) where {T<:Dates.DateTime} = "datetime"
 julia_type_to_schema_type(::Type{T}) where {T<:AbstractString} = "string"
-julia_type_to_schema_type(::Type{T}) where {S, T<:DataValue{S}} = julia_type_to_schema_type(S)
+julia_type_to_schema_type(::Type{T}) where {S, T<:DataValues.DataValue{S}} = julia_type_to_schema_type(S)
+
+own_json_formatter(io, x) = JSON.print(io, x)
+own_json_formatter(io, x::DataValues.DataValue) = DataValues.isna(x) ? JSON.print(io,nothing) : own_json_formatter(io, x[])
 
 function printdataresource(io::IO, source)
     col_names = String.(fieldnames(eltype(source)))
-    col_types = [i for i in eltype(source).parameters]
+    col_types = [fieldtype(eltype(source), i) for i=1:length(col_names)]
 
     schema = Dict("fields" => [Dict("name"=>string(i[1]), "type"=>julia_type_to_schema_type(i[2])) for i in zip(col_names, col_types)])
 
@@ -224,7 +227,7 @@ function printdataresource(io::IO, source)
             JSON.print(io, col_names[col])
             print(io, ":")
             # TODO This is not type stable, should really unroll the loop in a generated function
-            JSON.print(io, row[col])
+            own_json_formatter(io, row[col])
         end
         print(io, "}")
     end

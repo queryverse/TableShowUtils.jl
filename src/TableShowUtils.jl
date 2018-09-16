@@ -1,7 +1,7 @@
-__precompile__()
 module TableShowUtils
 
 import JSON, DataValues
+import Markdown
 
 function printtable(io::IO, source, typename::AbstractString; force_unknown_rows=false)
     T = eltype(source)
@@ -9,7 +9,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
     if force_unknown_rows
         rows = nothing
         data = Iterators.take(source, 10) |> collect
-    elseif Base.iteratorsize(source)==Base.HasLength()
+    elseif Base.IteratorSize(source)==Base.HasLength()
         rows = length(source)
         data = Iterators.take(source, 10) |> collect
     else
@@ -23,13 +23,13 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
         end
     end
 
-    cols = length(T.parameters)
+    cols = length(fieldnames(T))
 
     println(io, "$(rows===nothing ? "?" : rows)x$(cols) $typename")
 
     colnames = String.(fieldnames(eltype(source)))
 
-    data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->showcompact(io,data[r][c])) for r in 0:length(data), c in 1:cols]
+    data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
 
     maxwidth = [maximum(length.(data[:,c])) for c in 1:cols]
 
@@ -123,7 +123,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
 
     if force_unknown_rows
         rows = nothing
-    elseif Base.iteratorsize(source)==Base.HasLength()
+    elseif Base.IteratorSize(source)==Base.HasLength()
         rows = length(source)
     else
         count_needed_plus_one =  Iterators.count(i->true, Iterators.take(source, max_elements+1))
@@ -152,7 +152,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
         print(io, "<tr>")
         for c in values(r)
             print(io, "<td>")
-            Base.Markdown.htmlesc(io, sprint(i->showcompact(i,c)))
+            Markdown.htmlesc(io, sprint(io->show(IOContext(io, :compact => true),c)))
             print(io, "</td>")
         end
         print(io, "</tr>")
@@ -181,7 +181,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
 
     if !isempty(row_post_text)
         print(io, "<p>")
-        Base.Markdown.htmlesc(io, row_post_text)
+        Markdown.htmlesc(io, row_post_text)
         print(io, "</p>")
     end
 end

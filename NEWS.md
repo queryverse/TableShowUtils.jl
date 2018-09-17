@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.0 Release Notes
+* Add support for dataresource MIME type
+
 # TableShowUtils.jl v0.1.1 Release Notes
 * Drop precompile statement
 

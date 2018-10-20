@@ -42,7 +42,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
         if size(data,2)==1
             for r in 1:size(data,1)
                 if length(data[r,1])>available_width
-                    data[r,1] = data[r,1][1:chr2ind(data[r,1],available_width-2)] * "\""
+                    data[r,1] = data[r,1][1:nextind(data[r,1], 0, available_width-2)] * "\""
                     push!(shortened_rows, r)
                 end
             end

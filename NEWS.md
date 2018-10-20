@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.1 Release Notes
+* Fix a remaining julia deprecation bug
+
 # TableShowUtils.jl v0.2.0 Release Notes
 * Add support for dataresource MIME type
 

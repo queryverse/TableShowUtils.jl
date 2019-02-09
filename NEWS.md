@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.3 Release Notes
+* Show NA values in gray
+
 # TableShowUtils.jl v0.2.2 Release Notes
 * Fix how IteratorSize is handled
 

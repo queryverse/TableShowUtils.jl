@@ -9,7 +9,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
     if force_unknown_rows
         rows = nothing
         data = Iterators.take(source, 10) |> collect
-    elseif Base.IteratorSize(source)==Base.HasLength()
+    elseif Base.IteratorSize(source) isa Union{Base.HasLength, Base.HasShape{1}}
         rows = length(source)
         data = Iterators.take(source, 10) |> collect
     else
@@ -123,7 +123,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
 
     if force_unknown_rows
         rows = nothing
-    elseif Base.IteratorSize(source)==Base.HasLength()
+    elseif Base.IteratorSize(source) isa Union{Base.HasLength, Base.HasShape{1}}
         rows = length(source)
     else
         count_needed_plus_one =  Iterators.count(i->true, Iterators.take(source, max_elements+1))

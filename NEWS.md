@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.2 Release Notes
+* Fix how IteratorSize is handled
+
 # TableShowUtils.jl v0.2.1 Release Notes
 * Fix a remaining julia deprecation bug
 

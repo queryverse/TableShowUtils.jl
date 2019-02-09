@@ -29,12 +29,14 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
 
     colnames = String.(fieldnames(eltype(source)))
 
+    NAvalues = [r==0 ? false : DataValues.isna(data[r][c]) for r in 0:length(data), c in 1:cols]
+
     data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
 
     maxwidth = [maximum(length.(data[:,c])) for c in 1:cols]
 
     available_heigth, available_width = displaysize(io)
-    available_width -=1 
+    available_width -=1
 
     shortened_rows = Set{Int}()
 
@@ -67,22 +69,26 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
         if c<size(data,2)
             print(io, "─┼─")
         end
-    end      
+    end
     for r in 2:size(data,1)
         println(io)
         for c in 1:size(data,2)
-            
+
             if r in shortened_rows
                 print(io, data[r,c],)
                 print(io, "…")
             else
-                print(io, rpad(data[r,c], maxwidth[c]))
+                if NAvalues[r,c]
+                    printstyled(io, rpad(data[r,c], maxwidth[c]), color=:light_black)
+                else
+                    print(io, rpad(data[r,c], maxwidth[c]))
+                end
             end
             if c<size(data,2)
                 print(io, " │ ")
             end
         end
-    end        
+    end
 
     if rows===nothing
         row_post_text = "more rows"
@@ -131,7 +137,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
     end
 
     haslimit = get(io, :limit, true)
-    
+
     # Header
     print(io, "<table>")
     print(io, "<thead>")
@@ -142,7 +148,7 @@ function printHTMLtable(io, source; force_unknown_rows=false)
         print(io, "</th>")
     end
     print(io, "</tr>")
-    print(io, "</thead>")    
+    print(io, "</thead>")
 
     # Body
     print(io, "<tbody>")
@@ -156,10 +162,10 @@ function printHTMLtable(io, source; force_unknown_rows=false)
             print(io, "</td>")
         end
         print(io, "</tr>")
-    end    
+    end
 
     if rows==nothing
-        row_post_text = "... with more rows."            
+        row_post_text = "... with more rows."
     elseif rows > max_elements
         extra_rows = rows - max_elements
         row_post_text = "... with $extra_rows more $(extra_rows==1 ? "row" : "rows")."

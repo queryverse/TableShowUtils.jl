@@ -194,6 +194,7 @@ end
 
 Base.Multimedia.istextmime(::MIME{Symbol("application/vnd.dataresource+json")}) = true
 
+julia_type_to_schema_type(::Type{T}) where {T} = "string"
 julia_type_to_schema_type(::Type{T}) where {T<:AbstractFloat} = "number"
 julia_type_to_schema_type(::Type{T}) where {T<:Integer} = "integer"
 julia_type_to_schema_type(::Type{T}) where {T<:Bool} = "boolean"

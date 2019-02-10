@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.5 Release Notes
+* Output unknown data types as string in printdataresource
+
 # TableShowUtils.jl v0.2.4 Release Notes
 * Make printdataresource work with EltypeUnknown
 

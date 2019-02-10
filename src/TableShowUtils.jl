@@ -207,9 +207,14 @@ own_json_formatter(io, x) = JSON.print(io, x)
 own_json_formatter(io, x::DataValues.DataValue) = DataValues.isna(x) ? JSON.print(io,nothing) : own_json_formatter(io, x[])
 
 function printdataresource(io::IO, source)
-    col_names = String.(fieldnames(eltype(source)))
-    col_types = [fieldtype(eltype(source), i) for i=1:length(col_names)]
-
+    if Base.IteratorEltype(source) isa Base.EltypeUnknown
+        first_el = first(source)
+        col_names = String.(propertynames(first_el))
+        col_types = [fieldtype(typeof(first_el), i) for i=1:length(col_names)]
+    else
+        col_names = String.(fieldnames(eltype(source)))
+        col_types = [fieldtype(eltype(source), i) for i=1:length(col_names)]
+    end
     schema = Dict("fields" => [Dict("name"=>string(i[1]), "type"=>julia_type_to_schema_type(i[2])) for i in zip(col_names, col_types)])
 
     print(io, "{")

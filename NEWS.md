@@ -1,3 +1,6 @@
+# TableShowUtils.jl v0.2.4 Release Notes
+* Make printdataresource work with EltypeUnknown
+
 # TableShowUtils.jl v0.2.3 Release Notes
 * Show NA values in gray
 

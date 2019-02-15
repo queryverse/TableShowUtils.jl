@@ -1,7 +1,7 @@
 module TableShowUtils
 
 import JSON, DataValues
-import Markdown, Dates
+import Markdown, Dates, Unicode
 
 function printtable(io::IO, source, typename::AbstractString; force_unknown_rows=false)
     T = eltype(source)
@@ -33,12 +33,19 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
 
     data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
 
-    maxwidth = [maximum(length.(data[:,c])) for c in 1:cols]
+    maxwidth = [maximum(Unicode.textwidth.(data[:,c])) for c in 1:cols]
 
     available_heigth, available_width = displaysize(io)
     available_width -=1
 
     shortened_rows = Set{Int}()
+
+    function textwidth_based_rpad(s, n)
+        l = Unicode.textwidth(s)
+        m = n - l
+        m <= 0 && return string(s)
+        return string(s, ' '^m)
+    end
 
     while sum(maxwidth) + (size(data,2)-1) * 3 > available_width
         if size(data,2)==1
@@ -81,7 +88,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
                 if NAvalues[r,c]
                     printstyled(io, rpad(data[r,c], maxwidth[c]), color=:light_black)
                 else
-                    print(io, rpad(data[r,c], maxwidth[c]))
+                    print(io, textwidth_based_rpad(data[r,c], maxwidth[c]))
                 end
             end
             if c<size(data,2)

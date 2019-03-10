@@ -26,4 +26,8 @@ source_with_NA = [(a=1,b="A"),(a=2,b=NA)]
 
 @test sprint((stream) -> TableShowUtils.printHTMLtable(stream, source, force_unknown_rows = true)) == "<table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>&quot;A&quot;</td></tr><tr><td>2</td><td>&quot;B&quot;</td></tr><tr><td>&vellip;</td><td>&vellip;</td></tr></tbody></table><p>... with more rows.</p>"
 
+@test sprint(TableShowUtils.printdataresource, source) == "{\"schema\":{\"fields\":[{\"name\":\"a\",\"type\":\"integer\"},{\"name\":\"b\",\"type\":\"string\"}]},\"data\":[{\"a\":1,\"b\":\"A\"},{\"a\":2,\"b\":\"B\"}]}"
+
+@test sprint(TableShowUtils.printdataresource, source_with_NA) == "{\"schema\":{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"}]},\"data\":[{\"a\":1,\"b\":\"A\"},{\"a\":2,\"b\":null}]}"
+
 end

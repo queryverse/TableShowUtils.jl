@@ -1,6 +1,7 @@
 using TableShowUtils
 using Test
 using DataValues
+using Dates
 
 @testset "TableShowUtils" begin
 
@@ -29,5 +30,12 @@ source_with_NA = [(a=1,b="A"),(a=2,b=NA)]
 @test sprint(TableShowUtils.printdataresource, source) == "{\"schema\":{\"fields\":[{\"name\":\"a\",\"type\":\"integer\"},{\"name\":\"b\",\"type\":\"string\"}]},\"data\":[{\"a\":1,\"b\":\"A\"},{\"a\":2,\"b\":\"B\"}]}"
 
 @test sprint(TableShowUtils.printdataresource, source_with_NA) == "{\"schema\":{\"fields\":[{\"name\":\"a\",\"type\":\"string\"},{\"name\":\"b\",\"type\":\"string\"}]},\"data\":[{\"a\":1,\"b\":\"A\"},{\"a\":2,\"b\":null}]}"
+
+@test TableShowUtils.julia_type_to_schema_type(AbstractFloat) == "number"
+@test TableShowUtils.julia_type_to_schema_type(Bool) == "boolean"
+@test TableShowUtils.julia_type_to_schema_type(Dates.Time) == "time"
+@test TableShowUtils.julia_type_to_schema_type(Dates.Date) == "date"
+@test TableShowUtils.julia_type_to_schema_type(Dates.DateTime) == "datetime"
+@test TableShowUtils.julia_type_to_schema_type(DataValues.DataValue{Integer}) == "integer"
 
 end

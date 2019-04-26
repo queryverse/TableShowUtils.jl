@@ -1,3 +1,7 @@
+# TableShowUtils.jl v1.0.0 Release Notes
+* Drop julia 0.7 support
+* Move to Project.toml
+
 # TableShowUtils.jl v0.2.5 Release Notes
 * Output unknown data types as string in printdataresource
 

@@ -165,8 +165,10 @@ function printHTMLtable(io, source; force_unknown_rows=false)
         print(io, "<tr>")
         for c in values(r)
             print(io, "<td>")
-            if c isa Dates.AbstractTime                
+            if c isa Dates.AbstractTime
                 Markdown.htmlesc(io, sprint(io->print(IOContext(io, :compact => true),c)))
+            elseif c isa DataValues.DataValue && DataValues.hasvalue(c) && c[] isa Dates.AbstractDateTime
+                Markdown.htmlesc(io, sprint(io->print(IOContext(io, :compact => true),c[])))
             else
                 Markdown.htmlesc(io, sprint(io->show(IOContext(io, :compact => true),c)))
             end

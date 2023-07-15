@@ -36,10 +36,15 @@
 end
 
 @testitem "DateTime" begin
-    using Dates
+    using Dates, DataValues
 
     source = [(a=1,b=DateTime(2010, 5, 6)),(a=2,b=DateTime(2011, 5, 6))]
 
     @test sprint(TableShowUtils.printHTMLtable, source) == """
     <table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2010-05-06T00:00:00</td></tr><tr><td>2</td><td>2011-05-06T00:00:00</td></tr></tbody></table>"""
+
+    source2 = [(a=1,b=DataValue(DateTime(2010, 5, 6))),(a=2,b=NA)]
+
+    @test sprint(TableShowUtils.printHTMLtable, source2) == """
+    <table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2010-05-06T00:00:00</td></tr><tr><td>2</td><td>#NA</td></tr></tbody></table>"""
 end

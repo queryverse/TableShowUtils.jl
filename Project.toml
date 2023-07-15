@@ -1,22 +1,22 @@
 name = "TableShowUtils"
 uuid = "5e66a065-1f0a-5976-b372-e0b8c017ca10"
-version = "0.2.6-DEV"
+version = "0.2.6"
 
 [deps]
-DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
 Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 JSON = "682c06a0-de6a-54ab-a142-c8b1cf79cde6"
-Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
+DataValues = "e7dc6d0d-1eca-5fa6-8ad6-5aecde8b7ea5"
 Unicode = "4ec0a83e-493e-50e2-b9ac-8f72acf5a8f5"
-
-[compat]
-DataValues = "0.4"
-JSON = "0.19, 0.20, 0.21"
-julia = "1"
+Markdown = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [extras]
-Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
 TestItemRunner = "f8b46487-2199-4994-9208-9a1283c18c0a"
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[compat]
+JSON = "0.19, 0.20, 0.21"
+julia = "1"
+DataValues = "0.4"
 
 [targets]
 test = ["Test", "TestItemRunner"]

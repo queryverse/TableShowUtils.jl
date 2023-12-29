@@ -9,12 +9,12 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
     if force_unknown_rows
         rows = nothing
         data = Iterators.take(source, 10) |> collect
-    elseif Base.IteratorSize(source) isa Union{Base.HasLength, Base.HasShape{1}}
+    elseif Base.IteratorSize(source) isa Union{Base.HasLength,Base.HasShape{1}}
         rows = length(source)
         data = Iterators.take(source, 10) |> collect
     else
         data_plus_one = Iterators.take(source, 11) |> collect
-        if length(data_plus_one)<11
+        if length(data_plus_one) < 11
             rows = length(data_plus_one)
             data = data_plus_one
         else
@@ -29,14 +29,14 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
 
     colnames = String.(fieldnames(eltype(source)))
 
-    NAvalues = [r==0 ? false : DataValues.isna(data[r][c]) for r in 0:length(data), c in 1:cols]
+    NAvalues = [r == 0 ? false : DataValues.isna(data[r][c]) for r in 0:length(data), c in 1:cols]
 
-    data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
+    data = [r == 0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io -> show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
 
-    maxwidth = [maximum(Unicode.textwidth.(data[:,c])) for c in 1:cols]
+    maxwidth = [maximum(Unicode.textwidth.(data[:, c])) for c in 1:cols]
 
     available_heigth, available_width = displaysize(io)
-    available_width -=1
+    available_width -= 1
 
     shortened_rows = Set{Int}()
 
@@ -47,67 +47,67 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
         return string(s, ' '^m)
     end
 
-    while sum(maxwidth) + (size(data,2)-1) * 3 > available_width
-        if size(data,2)==1
-            for r in 1:size(data,1)
-                if length(data[r,1])>available_width
-                    data[r,1] = data[r,1][1:nextind(data[r,1], 0, available_width-2)] * "\""
+    while sum(maxwidth) + (size(data, 2) - 1) * 3 > available_width
+        if size(data, 2) == 1
+            for r in 1:size(data, 1)
+                if length(data[r, 1]) > available_width
+                    data[r, 1] = data[r, 1][1:nextind(data[r, 1], 0, available_width - 2)] * "\""
                     push!(shortened_rows, r)
                 end
             end
             maxwidth[1] = available_width
             break
         else
-            data = data[:,1:end-1]
+            data = data[:, 1:end-1]
 
-            maxwidth = [maximum(length.(data[:,c])) for c in 1:size(data,2)]
+            maxwidth = [maximum(length.(data[:, c])) for c in 1:size(data, 2)]
         end
     end
 
-    for c in 1:size(data,2)
+    for c in 1:size(data, 2)
         print(io, rpad(colnames[c], maxwidth[c]))
-        if c<size(data,2)
+        if c < size(data, 2)
             print(io, " │ ")
         end
     end
     println(io)
-    for c in 1:size(data,2)
+    for c in 1:size(data, 2)
         print(io, repeat("─", maxwidth[c]))
-        if c<size(data,2)
+        if c < size(data, 2)
             print(io, "─┼─")
         end
     end
-    for r in 2:size(data,1)
+    for r in 2:size(data, 1)
         println(io)
-        for c in 1:size(data,2)
+        for c in 1:size(data, 2)
 
             if r in shortened_rows
-                print(io, data[r,c],)
+                print(io, data[r, c],)
                 print(io, "…")
             else
-                if NAvalues[r,c]
-                    printstyled(io, rpad(data[r,c], maxwidth[c]), color=:light_black)
+                if NAvalues[r, c]
+                    printstyled(io, rpad(data[r, c], maxwidth[c]), color=:light_black)
                 else
-                    print(io, textwidth_based_rpad(data[r,c], maxwidth[c]))
+                    print(io, textwidth_based_rpad(data[r, c], maxwidth[c]))
                 end
             end
-            if c<size(data,2)
+            if c < size(data, 2)
                 print(io, " │ ")
             end
         end
     end
 
-    if rows===nothing
+    if rows === nothing
         row_post_text = "more rows"
-    elseif rows > size(data,1)-1
+    elseif rows > size(data, 1) - 1
         extra_rows = rows - 10
         row_post_text = "$extra_rows more $(extra_rows==1 ? "row" : "rows")"
     else
         row_post_text = ""
     end
 
-    if size(data,2)!=cols
-        extra_cols = cols-size(data,2)
+    if size(data, 2) != cols
+        extra_cols = cols - size(data, 2)
         col_post_text = "$extra_cols more $(extra_cols==1 ? "column" : "columns"): "
         col_post_text *= Base.join([colnames[cols-extra_cols+1:end]...], ", ")
     else
@@ -116,7 +116,7 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
 
     if !isempty(row_post_text) || !isempty(col_post_text)
         println(io)
-        print(io,"... with ")
+        print(io, "... with ")
         if !isempty(row_post_text)
             print(io, row_post_text)
         end
@@ -136,11 +136,11 @@ function printHTMLtable(io, source; force_unknown_rows=false)
 
     if force_unknown_rows
         rows = nothing
-    elseif Base.IteratorSize(source) isa Union{Base.HasLength, Base.HasShape{1}}
+    elseif Base.IteratorSize(source) isa Union{Base.HasLength,Base.HasShape{1}}
         rows = length(source)
     else
-        count_needed_plus_one =  Iterators.count(i->true, Iterators.take(source, max_elements+1))
-        rows = count_needed_plus_one<max_elements+1 ? count_needed_plus_one : nothing
+        count_needed_plus_one = Iterators.count(i -> true, Iterators.take(source, max_elements + 1))
+        rows = count_needed_plus_one < max_elements + 1 ? count_needed_plus_one : nothing
     end
 
     haslimit = get(io, :limit, true)
@@ -166,18 +166,18 @@ function printHTMLtable(io, source; force_unknown_rows=false)
         for c in values(r)
             print(io, "<td>")
             if c isa Dates.AbstractTime
-                Markdown.htmlesc(io, sprint(io->print(IOContext(io, :compact => true),c)))
+                Markdown.htmlesc(io, sprint(io -> print(IOContext(io, :compact => true), c)))
             elseif c isa DataValues.DataValue && DataValues.hasvalue(c) && c[] isa Dates.AbstractDateTime
-                Markdown.htmlesc(io, sprint(io->print(IOContext(io, :compact => true),c[])))
+                Markdown.htmlesc(io, sprint(io -> print(IOContext(io, :compact => true), c[])))
             else
-                Markdown.htmlesc(io, sprint(io->show(IOContext(io, :compact => true),c)))
+                Markdown.htmlesc(io, sprint(io -> show(IOContext(io, :compact => true), c)))
             end
             print(io, "</td>")
         end
         print(io, "</tr>")
     end
 
-    if rows==nothing
+    if rows == nothing
         row_post_text = "... with more rows."
     elseif rows > max_elements
         extra_rows = rows - max_elements
@@ -215,38 +215,38 @@ julia_type_to_schema_type(::Type{T}) where {T<:Dates.Time} = "time"
 julia_type_to_schema_type(::Type{T}) where {T<:Dates.Date} = "date"
 julia_type_to_schema_type(::Type{T}) where {T<:Dates.DateTime} = "datetime"
 julia_type_to_schema_type(::Type{T}) where {T<:AbstractString} = "string"
-julia_type_to_schema_type(::Type{T}) where {S, T<:DataValues.DataValue{S}} = julia_type_to_schema_type(S)
+julia_type_to_schema_type(::Type{T}) where {S,T<:DataValues.DataValue{S}} = julia_type_to_schema_type(S)
 
 own_json_formatter(io, x) = JSON.print(io, x)
-own_json_formatter(io, x::DataValues.DataValue) = DataValues.isna(x) ? JSON.print(io,nothing) : own_json_formatter(io, x[])
+own_json_formatter(io, x::DataValues.DataValue) = DataValues.isna(x) ? JSON.print(io, nothing) : own_json_formatter(io, x[])
 
 function printdataresource(io::IO, source)
     if Base.IteratorEltype(source) isa Base.EltypeUnknown
         first_el = first(source)
         col_names = String.(propertynames(first_el))
-        col_types = [fieldtype(typeof(first_el), i) for i=1:length(col_names)]
+        col_types = [fieldtype(typeof(first_el), i) for i = 1:length(col_names)]
     else
         col_names = String.(fieldnames(eltype(source)))
-        col_types = [fieldtype(eltype(source), i) for i=1:length(col_names)]
+        col_types = [fieldtype(eltype(source), i) for i = 1:length(col_names)]
     end
-    schema = Dict("fields" => [Dict("name"=>string(i[1]), "type"=>julia_type_to_schema_type(i[2])) for i in zip(col_names, col_types)])
+    schema = Dict("fields" => [Dict("name" => string(i[1]), "type" => julia_type_to_schema_type(i[2])) for i in zip(col_names, col_types)])
 
     print(io, "{")
     JSON.print(io, "schema")
     print(io, ":")
-    JSON.print(io,schema)
-    print(io,",")
+    JSON.print(io, schema)
+    print(io, ",")
     JSON.print(io, "data")
     print(io, ":[")
 
     for (row_i, row) in enumerate(source)
-        if row_i>1
+        if row_i > 1
             print(io, ",")
         end
 
         print(io, "{")
         for col in 1:length(col_names)
-            if col>1
+            if col > 1
                 print(io, ",")
             end
             JSON.print(io, col_names[col])

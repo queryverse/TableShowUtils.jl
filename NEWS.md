@@ -1,4 +1,5 @@
 # TableShowUtils.jl v1.0.0 Release Notes
+* Fix printtable for tables with zero columns
 * Drop julia 0.7 support
 * Move to Project.toml
 

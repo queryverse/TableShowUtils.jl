@@ -27,13 +27,15 @@ function printtable(io::IO, source, typename::AbstractString; force_unknown_rows
 
     println(io, "$(rows===nothing ? "?" : rows)x$(cols) $typename")
 
+    cols == 0 && return
+
     colnames = String.(fieldnames(eltype(source)))
 
     NAvalues = [r==0 ? false : DataValues.isna(data[r][c]) for r in 0:length(data), c in 1:cols]
 
     data = [r==0 ? colnames[c] : isa(data[r][c], AbstractString) ? data[r][c] : sprint(io->show(IOContext(io, :compact => true), data[r][c])) for r in 0:length(data), c in 1:cols]
 
-    maxwidth = [maximum(Unicode.textwidth.(data[:,c])) for c in 1:cols]
+    maxwidth = Int[maximum(Unicode.textwidth.(data[:,c])) for c in 1:cols]
 
     available_heigth, available_width = displaysize(io)
     available_width -=1

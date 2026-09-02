@@ -48,3 +48,16 @@ end
     @test sprint(TableShowUtils.printHTMLtable, source2) == """
     <table><thead><tr><th>a</th><th>b</th></tr></thead><tbody><tr><td>1</td><td>2010-05-06T00:00:00</td></tr><tr><td>2</td><td>#NA</td></tr></tbody></table>"""
 end
+
+@testitem "zero column table" begin
+    source = NamedTuple{(),Tuple{}}[]
+
+    plain = sprint(io -> TableShowUtils.printtable(io, source, "TestTable"))
+    @test startswith(plain, "0x0 TestTable")
+
+    html = sprint(io -> TableShowUtils.printHTMLtable(io, source))
+    @test occursin("<table>", html)
+
+    json = sprint(io -> TableShowUtils.printdataresource(io, source))
+    @test !isempty(json)
+end
